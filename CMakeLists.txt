@@ -107,6 +107,8 @@ set(PX4_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH ${PX4_SOURCE_DIR}/cmake)
 include(px4_parse_function_args)
 
+cmake_policy(SET CMP0079 NEW)
+
 #=============================================================================
 # git
 #
@@ -364,13 +366,13 @@ endif()
 #=============================================================================
 # Testing - Automatic unit and integration testing with CTest
 #
-
 # optionally enable cmake testing (supported only on posix)
 option(CMAKE_TESTING "Configure test targets" OFF)
 if(${PX4_CONFIG} STREQUAL "px4_sitl_test")
-	set(CMAKE_TESTING ON)
+	set(CMAKE_TESTING OFF)
 endif()
-if(CMAKE_TESTING)
+set(CMAKE_TESTING OFF)
+if(CMAKE_TESTING MATCHES ON)
 	include(CTest) # sets BUILD_TESTING variable
 endif()
 
@@ -380,7 +382,8 @@ set(TESTFILTER "" CACHE STRING "Filter string for ctest to selectively only run 
 # if testing is enabled download and configure gtest
 list(APPEND CMAKE_MODULE_PATH ${PX4_SOURCE_DIR}/cmake/gtest/)
 include(px4_add_gtest)
-if(BUILD_TESTING)
+if(BUILD_TESTING MATCHES ON)
+	
 	include(gtest)
 
 	add_custom_target(test_results
